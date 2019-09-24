@@ -1,0 +1,9 @@
+label: userTest
+input:
+  triggeredBy: sendMessage()
+outputMessage:
+  sentTo: userExchange
+  body:
+    user: Alexandre
+  headers:
+    contentType: application/json
