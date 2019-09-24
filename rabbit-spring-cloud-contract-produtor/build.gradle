@@ -52,9 +52,7 @@ dependencies {
 
     testCompile('org.springframework.cloud:spring-cloud-contract-wiremock')
 
-
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-amqp', version: '2.1.4.RELEASE'
-
 }
 
 dependencyManagement {

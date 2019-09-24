@@ -44,15 +44,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-parent', version: '1.2.1.RELEASE', ext: 'pom'
-
-    compile group: 'io.codearte.accurest', name: 'accurest-messaging-core', version: '1.1.1'
-
     testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.1.4.RELEASE'
-
-    testCompile group: 'io.codearte.accurest', name: 'accurest-core', version: '1.1.1'
-
-    testCompile group: 'io.codearte.accurest', name: 'accurest-messaging-camel'
-
 }
 
 dependencyManagement {

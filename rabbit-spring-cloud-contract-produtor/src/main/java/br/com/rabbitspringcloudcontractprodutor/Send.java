@@ -15,7 +15,7 @@ public class Send {
 
     @Scheduled(fixedDelay = 3000)
     public void sendNotification() {
-        amqpTemplate.convertAndSend("userExchange", "*.*", new Notification("Alexandre"));
+        amqpTemplate.convertAndSend("userExchange", "*.*", new User("Alexandre"));
         System.out.println("message ...: Enviada");
     }
 }

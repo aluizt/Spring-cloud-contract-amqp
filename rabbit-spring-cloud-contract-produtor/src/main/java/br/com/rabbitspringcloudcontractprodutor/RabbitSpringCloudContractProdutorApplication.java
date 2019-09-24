@@ -13,11 +13,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class RabbitSpringCloudContractProdutorApplication {
 
-    @Bean
-    public MessageConverter jackson2JsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(RabbitSpringCloudContractProdutorApplication.class, args);
     }
