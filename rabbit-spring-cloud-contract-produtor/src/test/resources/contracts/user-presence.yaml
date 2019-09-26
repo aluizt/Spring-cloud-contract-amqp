@@ -1,3 +1,4 @@
+description: Message sending test
 label: userTest
 input:
   triggeredBy: sendMessage()
