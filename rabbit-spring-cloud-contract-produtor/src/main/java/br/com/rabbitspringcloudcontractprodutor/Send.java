@@ -1,6 +1,7 @@
 package br.com.rabbitspringcloudcontractprodutor;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @NoArgsConstructor
+@Slf4j
 public class Send {
 
     @Autowired
@@ -16,6 +18,6 @@ public class Send {
     @Scheduled(fixedDelay = 3000)
     public void sendNotification() {
         amqpTemplate.convertAndSend("userExchange", "*.*", new User("Alexandre"));
-        System.out.println("message ...: Enviada");
+        log.info("Mensagem enviada ... ");
     }
 }

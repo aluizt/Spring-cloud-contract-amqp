@@ -19,9 +19,25 @@ apply plugin: 'maven-publish'
 
 contracts {
     baseClassForTests = 'br.com.rabbitspringcloudcontractprodutor.TestBase'
+    contractsMode = "LOCAL"
 }
 
+publishStubsToScm{
+    customize {
+        contractDependency {
+            stringNotation = "br.com:rabbit-spring-cloud-contract-produtor:+"
+        }
+
+        contractRepository{
+            repositoryUrl = "git://https://github.com/aluizt/stubs.git"
+            username = 'aluizt'
+            password = '*******'
+        }       
+    }
+}
 publish.dependsOn("publishStubsToScm")
+
+publishToMavenLocal.dependsOn("publishStubsToScm")
 
 
 group = 'br.com'

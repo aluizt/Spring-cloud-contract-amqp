@@ -5,6 +5,6 @@ input:
 outputMessage:
   sentTo: userExchange
   body:
-    user: Alexandre
+    name: Alexandre tavares
   headers:
     contentType: application/json
