@@ -1,0 +1,37 @@
+[{
+  "id" : "71841b70-cfc8-4bc4-96c9-c694cf644a52",
+  "request" : {
+    "url" : "/test",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "OK",
+    "transformers" : [ "response-template" ]
+  },
+  "uuid" : "71841b70-cfc8-4bc4-96c9-c694cf644a52"
+},
+{
+  "id" : "4aac8407-f4ea-44c8-a693-8cf2cd95ec43",
+  "request" : {
+    "url" : "/health",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "OK"
+  },
+  "uuid" : "4aac8407-f4ea-44c8-a693-8cf2cd95ec43"
+},
+{
+  "id" : "b26a9d40-019a-40ea-9664-a5a91479568b",
+  "request" : {
+    "url" : "/ping",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "OK"
+  },
+  "uuid" : "b26a9d40-019a-40ea-9664-a5a91479568b"
+}]

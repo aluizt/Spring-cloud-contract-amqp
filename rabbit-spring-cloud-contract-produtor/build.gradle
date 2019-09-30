@@ -31,7 +31,7 @@ publishStubsToScm{
         contractRepository{
             repositoryUrl = "git://https://github.com/aluizt/stubs.git"
             username = 'aluizt'
-            password = '*******'
+            password = 'Malu2m@lu'
         }       
     }
 }

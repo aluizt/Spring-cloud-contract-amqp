@@ -28,7 +28,8 @@ public class ListenerTest {
     @Test
     public void shouldReceiveMessageWithUserAlexandre() {
         stubTrigger.trigger("userTest");
+        User response = this.userListener.getUser();
 
-        assertEquals(this.userListener.getUser().getName(), "Alexandre");
+        assertEquals(response.getName(), "Alexandre");
     }
 }
