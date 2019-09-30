@@ -1,5 +1,7 @@
 package br.com.rabbitspringcloudcontractconsumidor;
 
+import br.com.rabbitspringcloudcontractconsumidor.listener.UserListener;
+import br.com.rabbitspringcloudcontractconsumidor.model.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,15 @@ public class ListenerTest {
         stubTrigger.trigger("userTest");
         User response = this.userListener.getUser();
 
-        assertEquals(response.getName(), "Alexandre");
+        assertEquals(response.getName(), "João da Silva");
+    }
+
+    @Test
+    public void shouldReceiveMessageWithInvoice() {
+        Integer number = 199887;
+        stubTrigger.trigger("invoiceTest");
+        Invoice response = this.userListener.getInvoice();
+
+        assertEquals(response.getNumber(), number);
     }
 }

@@ -1,5 +1,6 @@
 package br.com.rabbitspringcloudcontractprodutor;
 
+import br.com.rabbitspringcloudcontractprodutor.send.Send;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,7 +14,11 @@ public abstract class TestBase {
     @Autowired
     public Send send;
 
-    public void sendMessage() {
-        send.sendNotification();
+    public void sendUserMessage() {
+        send.sendUserMessage();
+    }
+
+    public void sendInvoiceMessage(){
+        send.sendInvoiceMessage();
     }
 }

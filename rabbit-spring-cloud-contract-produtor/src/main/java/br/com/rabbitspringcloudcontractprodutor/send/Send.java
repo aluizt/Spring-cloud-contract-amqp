@@ -1,5 +1,6 @@
-package br.com.rabbitspringcloudcontractprodutor;
+package br.com.rabbitspringcloudcontractprodutor.send;
 
+import br.com.rabbitspringcloudcontractprodutor.util.*;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,15 +18,13 @@ public class Send {
     AmqpTemplate amqpTemplate;
 
     @Scheduled(fixedDelay = 3000)
-    public void sendNotification() {
-        amqpTemplate.convertAndSend("userExchange", "*.*",getUser());
+    public void sendUserMessage() {
+        amqpTemplate.convertAndSend("userExchange", "*.*",Data.getUser());
     }
 
-    private User getUser(){
-        return User.builder()
-                .name("Alexandre")
-                .address("Rua Figueira")
-                .number(479)
-                .build();
+    @Scheduled(fixedDelay = 3000)
+    public void sendInvoiceMessage() {
+        amqpTemplate.convertAndSend("invoiceExchange", "*.*",Data.getInvoice());
     }
+
 }

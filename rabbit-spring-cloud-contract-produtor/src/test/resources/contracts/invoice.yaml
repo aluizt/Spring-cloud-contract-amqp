@@ -1,0 +1,23 @@
+description: Message sending invoice test
+label: invoiceTest
+input:
+  triggeredBy: sendInvoiceMessage()
+outputMessage:
+  sentTo: invoiceExchange
+  body:
+    number: 199887
+    price: 125.00
+  matchers:
+    body:
+      - path: $.number
+        type: by_type
+      - path: $.number
+        type: by_regex
+        value: "[0-9]{1,10}"
+      - path: $.price
+        type: by_type
+      - path: $.price
+        type: by_regex
+        value: "[0-9]{0,10}[.]{1,1}[0-9]{1,2}"
+  headers:
+    contentType: application/json

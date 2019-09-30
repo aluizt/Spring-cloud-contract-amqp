@@ -1,10 +1,10 @@
-package br.com.rabbitspringcloudcontractprodutor;
+package br.com.rabbitspringcloudcontractconsumidor.model;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Builder
 @Data
@@ -14,5 +14,4 @@ public class User {
     private String name;
     private String address;
     private Integer number;
-
 }
