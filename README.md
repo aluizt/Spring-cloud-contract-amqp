@@ -140,10 +140,11 @@ Em nosso repositório git temos de ter a seguinte estrutura.
 
 META-INF/br.com/rabbit-spring-cloud-contract-produtor/0.0.1-SNAPSHOT/contracts/
 
-Onde br.com, é o group-id.                       
-     rabbit-spring-cloud-contract-produtor, é o artifact-id                     
-     0.0.1-SNAPSHOT, é a versão                          
-     contracts, o local onde sera armazenado os contratos                
+Onde:
+     br.com,   é o group-id.                       
+     rabbit-spring-cloud-contract-produtor,   é o artifact-id                     
+     0.0.1-SNAPSHOT,   é a versão                          
+     contracts,   o local onde sera armazenado os contratos                
      
      
 ### Consumidor.
@@ -221,6 +222,118 @@ public class Config {
 
 }
 ```
+
+### Testes do lado do consumidor.
+
+Agora podemos criar nossos testes, para isto o Stub Runner simulará o fluxo de mensagens do broker RabbitMQ na memória, sendo guiado pelo Contrato.
+
+Para a realização dos testes não é necessário o RabbitMQ.
+
+#### Configurando o Stub Runner
+
+Vamos iniciar criando um arquivo application.properties em src/test/resources com o seguinte conteudo.
+
+      stubrunner.amqp.enabled=true
+      stubrunner.stream.enabled=false
+      stubrunner.integration.enabled=false
+      
+Criando o teste.
+
+```
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@AutoConfigureStubRunner(ids = "br.com:rabbit-spring-cloud-contract-produtor:+:6565",
+        repositoryRoot = "git://https://github.com/aluizt/stubs.git",
+        stubsMode = StubRunnerProperties.StubsMode.REMOTE)
+public class ListenerTest {
+
+    @Autowired
+    StubTrigger stubTrigger;
+
+    @Autowired
+    UserListener userListener;
+
+    @Test
+    public void shouldReceiveMessageWithUserAlexandre() {
+        stubTrigger.trigger("userTest");
+        User response = this.userListener.getUser();
+
+        assertEquals(response.getName(), "João da Silva");
+    }
+
+    @Test
+    public void shouldReceiveMessageWithInvoice() {
+        Integer number = 199887;
+        stubTrigger.trigger("invoiceTest");
+        Invoice response = this.userListener.getInvoice();
+
+        assertEquals(response.getNumber(), number);
+    }
+}
+```
+Utilizamos a anotação @AutoConfigureStubRunner para informar o local onde esta armazenado nossos arquivos de contrato.
+
+      ids = "br.com:rabbit-spring-cloud-contract-produtor:+:6565"
+      
+      br.com,   é o group-id.                       
+      rabbit-spring-cloud-contract-produtor,   é o artifact-id 
+      + faz referencia a ultima versão.
+      6565 a porta que sera utilizada para simular o RabbitMQ
+      
+      repositoryRoot = "git://https://github.com/aluizt/stubs.git", informa o local dos contratos.
+      
+      stubsMode = StubRunnerProperties.StubsMode.REMOTE), REMOTE ou LOCAL
+      
+Vamos simular o seguinte cenário: uma mensagem será enviada para uma exchange no RabbitMQ, depois roteada para uma fila e finalmente processada pelo Consumidor. Neste caso vamos utilizar o StubTrigger que é capaz de simular interações de mensagens.
+
+Através do subTrigger.trigger , criamos o cenário de contrato necessário por meio da label que foi especificado no arquivo  YAML.
+
+Nesse teste , o StubRunner configurará a simulação do RabbitMQ na memória e criará a infraestrutura necessária do cliente RabbitMQ. 
+
+O subTrigger fica ouvindo o metodo this.userListener.getUser() e envia a mensagem conforme o especificado no contrato, após efetua o teste.
+
+#### Produtor.
+
+Voltando ao produtor esta na hora de criarmos a classe resposável por enviar as mensagens e a clase de teste que verifica o contrato do lado do produtor.
+
+Neste exemplo criamos uma classe que envia a cada 3 segundos uma mensagem contendo os dados de um usuário e outra contendo os dados de uma fatura.
+
+```
+public class Send {
+
+    @Autowired
+    AmqpTemplate amqpTemplate;
+
+    @Scheduled(fixedDelay = 3000)
+    public void sendUserMessage() {
+        amqpTemplate.convertAndSend("userExchange", "*.*",Data.getUser());
+    }
+
+    @Scheduled(fixedDelay = 3000)
+    public void sendInvoiceMessage() {
+        amqpTemplate.convertAndSend("invoiceExchange", "*.*",Data.getInvoice());
+    }
+}
+```
+Criamos uma classe config, onde temos um bean "jackson2JsonMessageConverter" utilizado para manipular a conversão de mensagens de JSON para objeto de domínio.
+
+```
+@Configuration
+public class Config {
+    
+    @Bean
+    public MessageConverter jackson2JsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+}
+```
+
+
+
+
+      
+
+
 
 
 
