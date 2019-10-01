@@ -134,6 +134,95 @@ Podemos publicar este contrato em nosso repositório git executando a task publi
 Exemplo:
 ![poc-rabbit-contract-01](https://user-images.githubusercontent.com/41808527/65959526-9ae47900-e428-11e9-92c6-b5d360d5940f.png)
 
+##### Obs: 
+
+Em nosso repositório git temos de ter a seguinte estrutura.
+
+META-INF/br.com/rabbit-spring-cloud-contract-produtor/0.0.1-SNAPSHOT/contracts/
+
+Onde br.com, é o group-id.
+     rabbit-spring-cloud-contract-produtor, é o artifact-id
+     0.0.1-SNAPSHOT, é a versão 
+     contracts, o local onde sera armazenado os contratos
+     
+     
+### Consumidor.
+ 
+Agora vamos trabalhar no lado que ira consumir as mensagens, para isto teremos as seguintes dependencias em nosso gradle.build.
+
+    * spring-boot-starter-amqp
+    * spring-boot-starter-json
+    * org.projectlombok:lombok
+    * spring-boot-starter-parent
+    * spring-boot-starter-test
+    * spring-cloud-starter-contract-stub-runner
+    
+Vamos criar uma classe responsavé por ouvir a fila de mensagens que seram enviadas pelo produtor, para isto sera utilizado o Spring AMQP.
+
+A anotação @RabbitListener neste exemplo estará fazendo o binding entre a fila userQueue e a exchange userExchange.
+No método listenerUser a mensagem sera convertida em um objeto User que sera utilizado durante a execução dos testes.
+O mesmo ira ocorrer com o método listenerInvoice.
+
+```
+@Component
+@Slf4j
+public class UserListener {
+
+    User user = new User();
+    Invoice invoice = new Invoice();
+
+    @RabbitListener(bindings = @QueueBinding(value = @Queue(value = "userQueue"),exchange = @Exchange(value = "userExchange")))
+    public void listenerUser(User userReceived) {
+        printUserLog(setUser(userReceived));
+    }
+
+    @RabbitListener(bindings = @QueueBinding(value = @Queue(value = "invoiceQueue"),exchange = @Exchange(value = "invoiceExchange")))
+    public void listenerInvoice(Invoice invoiceReceived) {
+        printInvoiceLog(setInvoice(invoiceReceived));
+    }
+
+    private Invoice setInvoice(Invoice invoiceReceived){
+        invoice = invoiceReceived;
+        return invoice;
+    }
+
+    private User setUser(User userReceived){
+        user = userReceived;
+        return user;
+    }
+
+    public User getUser(){
+        return user;
+    }
+
+    public Invoice getInvoice() {
+        return invoice;
+    }
+
+    private void printUserLog(User userReceived){
+        log.info("User : " + userReceived.getName());
+    }
+    private void printInvoiceLog(Invoice invoiceReceived){
+        log.info("Invoice number : " + invoiceReceived.getNumber());
+    }
+}
+```
+
+Criamos uma classe config, onde temos um bean "jackson2JsonMessageConverter" utilizado para manipular a conversão de mensagens de JSON para objeto de domínio.
+
+```
+@Configuration
+public class Config {
+
+    @Bean
+    MessageConverter jackson2JsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
+
+}
+```
+
+
 
 
     
