@@ -140,10 +140,10 @@ Em nosso repositório git temos de ter a seguinte estrutura.
 
 META-INF/br.com/rabbit-spring-cloud-contract-produtor/0.0.1-SNAPSHOT/contracts/
 
-Onde br.com, é o group-id.
-     rabbit-spring-cloud-contract-produtor, é o artifact-id
-     0.0.1-SNAPSHOT, é a versão 
-     contracts, o local onde sera armazenado os contratos
+Onde br.com, é o group-id.                       
+     rabbit-spring-cloud-contract-produtor, é o artifact-id                     
+     0.0.1-SNAPSHOT, é a versão                          
+     contracts, o local onde sera armazenado os contratos                
      
      
 ### Consumidor.
