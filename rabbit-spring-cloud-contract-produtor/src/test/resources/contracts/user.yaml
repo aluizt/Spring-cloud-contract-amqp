@@ -7,7 +7,7 @@ outputMessage:
   body:
     name: João da Silva
     address: Rua Figueira
-    number: 479
+    number: 318
   matchers:
     body:
       - path: $.name
