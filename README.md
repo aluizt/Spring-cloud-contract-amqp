@@ -2,7 +2,7 @@
 
 Poc demonstrando a utilização do Spring Cloud Contract junto com o RabbitMQ.
 
-Criaremos um exemplo simples onde um produtor enviara uma mensagem contendo os atributos de um usuario, esta mensagem estara no formato JSON.
+Criaremos um exemplo simples onde um produtor enviará uma mensagem contendo os atributos de um usuario, esta mensagem estara no formato JSON.
 
 Os principais objetivos do Spring Cloud Contract são:
 
