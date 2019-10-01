@@ -144,7 +144,9 @@ Onde:
      br.com,   é o group-id.                       
      rabbit-spring-cloud-contract-produtor,   é o artifact-id                     
      0.0.1-SNAPSHOT,   é a versão                          
-     contracts,   o local onde sera armazenado os contratos                
+     contracts,   o local onde sera armazenado os contratos 
+     
+Os arquivos yaml devem ficar na pasta src/test/resources/contracts
      
      
 ### Consumidor.
@@ -327,22 +329,112 @@ public class Config {
     }
 }
 ```
+Vamos cria o teste do lado do produtor,  devemos garantir que o lado do produtor cumpra o contrato estabelecido da mesma maneira que o consumidor. Para isto vamos seguir os seguintes passos.
 
-
-
-
-      
-
-
-
-
-
-
-    
-
-
-
-
+   1- Configurar o Stub Runner
+   2- Criar a classe base para testes  
    
+ 
+Configurando o Stub Runner
 
+Criamos um arquivos application.properties em src/test/resources contendo.
+
+    stubrunner.amqp.enabled=true
+    
+    
+Classe Base.
+
+Para que os testes sejam criados de forma automatica é necessário uma clase base que "indique" o que devera ser testado, no exemplo abaixo os testes seram criados para testar os métodos da classe Send.
+
+```
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@AutoConfigureMessageVerifier
+public abstract class TestBase {
+    @Autowired
+    public Send send;
+
+    public void sendUserMessage() {
+        send.sendUserMessage();
+    }
+
+    public void sendInvoiceMessage(){
+        send.sendInvoiceMessage();
+    }
+}
+
+```
+
+Utilizamos uma anotação @AutoConfigureMessageVerifier indicando uma classe base para teste.
+As anotações usuais @RunWithe @SpringBootTest indicando ser uma classe de teste usual baseada no Spring Boot.
+
+Como o contrato User.yaml especifica triggeredBy: sendUserMessage(), precisamos fornecer a implementação desse método. Usaremos uma instancia de Send e sendUserMessage() método para enviar uma mensagem para o RabbitMQ.
+
+Como o contrato Invoice.yaml especifica triggeredBy: sendInvoiceMessage(), precisamos fornecer a implementação desse método. Usaremos uma instancia de Send e sendUserMessage() método para enviar uma mensagem para o RabbitMQ.
+
+Com base nestes contratos a classe de testes que foi criada ira extender a classe base, ela é mostrada abaixo.
+
+```
+public class ContractVerifierTest extends TestBase {
+
+	@Inject ContractVerifierMessaging contractVerifierMessaging;
+	@Inject ContractVerifierObjectMapper contractVerifierObjectMapper;
+
+	@Test
+	public void validate_invoice() throws Exception {
+		// when:
+			sendInvoiceMessage();
+
+		// then:
+			ContractVerifierMessage response = contractVerifierMessaging.receive("invoiceExchange");
+			assertThat(response).isNotNull();
+			assertThat(response.getHeader("contentType")).isNotNull();
+			assertThat(response.getHeader("contentType").toString()).isEqualTo("application/json");
+		// and:
+			DocumentContext parsedJson = JsonPath.parse(contractVerifierObjectMapper.writeValueAsString(response.getPayload()));
+		// and:
+			assertThat((Object) parsedJson.read("$.number")).isInstanceOf(java.lang.Integer.class);
+			assertThat(parsedJson.read("$.number", String.class)).matches("[0-9]{1,10}");
+			assertThat((Object) parsedJson.read("$.price")).isInstanceOf(java.lang.Double.class);
+			assertThat(parsedJson.read("$.price", String.class)).matches("[0-9]{0,10}[.]{1,1}[0-9]{1,2}");
+	}
+
+	@Test
+	public void validate_user() throws Exception {
+		// when:
+			sendUserMessage();
+
+		// then:
+			ContractVerifierMessage response = contractVerifierMessaging.receive("userExchange");
+			assertThat(response).isNotNull();
+			assertThat(response.getHeader("contentType")).isNotNull();
+			assertThat(response.getHeader("contentType").toString()).isEqualTo("application/json");
+		// and:
+			DocumentContext parsedJson = JsonPath.parse(contractVerifierObjectMapper.writeValueAsString(response.getPayload()));
+		// and:
+			assertThat((Object) parsedJson.read("$.name")).isInstanceOf(java.lang.String.class);
+			assertThat(parsedJson.read("$.name", String.class)).matches("[a-zA-Z . \u00C0-\u00FF]{1,50}");
+			assertThat((Object) parsedJson.read("$.address")).isInstanceOf(java.lang.String.class);
+			assertThat(parsedJson.read("$.address", String.class)).matches("[a-zA-Z .]{1,50}");
+			assertThat((Object) parsedJson.read("$.number")).isInstanceOf(java.lang.Integer.class);
+			assertThat(parsedJson.read("$.number", String.class)).matches("[0-9]{1,3}");
+	}
+
+}
+```
+
+O plug-in Maven criou um método validate_invoice() referente ao contrato Invoice.yaml. 
+
+O método sendInvoiceMessage() ) é chamado para disparar a mensagem AMQP. 
+
+O processamento da mensagem RabbitMQ é feito via objeto Spring Cloud Contract ContractVerifierMessaging que é capaz de emular a recepção da mensagem.
+
+Finalmente, as asserções são adquiridas por métodos estáticos de SpringCloudContractAssertionsclasse.
+
+O mesmo ocorre para o contrato User.yaml
+
+
+Pronto, temos os dois lados seguindo o contrado.
+
+Fonte: https://cloud.spring.io/spring-cloud-contract/reference/html/
 
