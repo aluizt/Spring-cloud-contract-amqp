@@ -131,6 +131,10 @@ Podemos publicar este contrato em nosso repositório git executando a task publi
 
     ./gradlew publishStubsToScm
     
+Exemplo:
+![poc-rabbit-contract-01](https://user-images.githubusercontent.com/41808527/65959526-9ae47900-e428-11e9-92c6-b5d360d5940f.png)
+
+
 
     
 
